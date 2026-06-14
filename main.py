@@ -52,13 +52,17 @@ def parse_args() -> argparse.Namespace:
     """Phân tích tham số dòng lệnh."""
 
     parser = argparse.ArgumentParser(description=APP_TITLE)
-    parser.add_argument("--gui", action="store_true", help="Mở giao diện đồ họa")
+    parser.add_argument(
+        "--cli",
+        action="store_true",
+        help="Chạy chế độ dòng lệnh (CLI) thay vì giao diện đồ họa mặc định",
+    )
     parser.add_argument(
         "--path",
         type=Path,
         nargs="*",
         default=None,
-        help="Thư mục cần quét (có thể nhiều path) ở chế độ CLI",
+        help="Thư mục cần quét (có thể nhiều path) — chỉ dùng với --cli",
     )
     return parser.parse_args()
 
@@ -75,10 +79,10 @@ def main() -> int:
     ensure_admin_on_windows()
 
     args = parse_args()
-    if args.gui:
-        launch_gui()
-        return 0
-    return run_cli(_cli_roots(args))
+    if args.cli:
+        return run_cli(_cli_roots(args))
+    launch_gui()
+    return 0
 
 
 if __name__ == "__main__":

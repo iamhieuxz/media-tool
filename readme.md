@@ -1,226 +1,177 @@
 # Media Scanner Pro
 
-**Media Scanner Pro** là bộ công cụ quét và quản lý thư viện media trên Windows (và CLI đa nền tảng). Ứng dụng giúp bạn:
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)](https://github.com/iamhieuxz/media-tool)
 
-- Quét hàng loạt ảnh và video trong một hoặc nhiều thư mục / ổ đĩa
-- Phát hiện file **bị hỏng** (corrupted) bằng nhiều lớp kiểm tra
-- Tìm file **trùng lặp** theo hash chính xác hoặc perceptual hash (ảnh tương tự)
-- Xem trước, so sánh, xóa hoặc cách ly file trực tiếp từ giao diện
-- Xuất báo cáo CSV và lưu lịch sử quét vào SQLite
+**Media Scanner Pro** — công cụ mã nguồn mở giúp dọn dẹp thư viện ảnh và video trên máy tính. Chỉ cần một lần quét, bạn có thể phát hiện file hỏng, tìm bản sao trùng lặp, xem trước trực tiếp và giải phóng dung lượng ổ đĩa.
 
----
-
-## Tính năng chính
-
-| Tính năng | Mô tả |
-|-----------|--------|
-| Quét đa đường dẫn | Chọn nhiều thư mục hoặc thêm toàn bộ ổ đĩa Windows |
-| Kiểm tra file lỗi | PIL + OpenCV cho ảnh; ffprobe cho video |
-| Phát hiện trùng lặp | SHA256 / MD5 (exact) hoặc pHash / dHash (perceptual) |
-| Giao diện Flet | Dark/Light theme, preview, zoom, so sánh cặp duplicate |
-| Thao tác file | Xóa, cách ly (quarantine), mở thư mục |
-| CLI headless | Quét không GUI, xuất CSV tự động |
-| Đóng gói EXE | PyInstaller one-file, yêu cầu quyền Admin trên Windows |
-
-### Định dạng media hỗ trợ
-
-- **Ảnh:** `.jpg`, `.jpeg`, `.png`, `.webp`, `.bmp`, `.tif`, `.tiff`, `.gif`
-- **Video:** `.mp4`, `.mkv`, `.avi`, `.mov`, `.wmv`, `.flv`, `.webm`, `.m4v`
+> Quét media · phát hiện file lỗi · tìm và xoá trùng lặp
 
 ---
 
-## Yêu cầu hệ thống
+## Vì sao dùng Media Scanner Pro?
 
-- **Python** 3.10 trở lên (khuyến nghị 3.11+)
-- **Windows** (GUI tối ưu; CLI chạy trên Linux/macOS)
-- **FFmpeg** (tùy chọn nhưng khuyến nghị): cài `ffprobe` vào PATH để kiểm tra video chính xác hơn
+Thư viện ảnh/video lớn thường chứa file tải lại nhiều lần, bản backup trùng nhau, hoặc file bị hỏng do copy không hoàn chỉnh. Media Scanner Pro gom ba việc quan trọng vào một luồng xử lý duy nhất:
+
+| Vấn đề | Giải pháp |
+|--------|-----------|
+| Không biết file nào bị hỏng | Kiểm tra đa lớp: **PIL**, **OpenCV**, **ffprobe** |
+| Nhiều file giống hệt nhau | Hash chính xác **SHA256 / MD5** |
+| Ảnh gần giống (resize, nén khác) | Perceptual hash **pHash / dHash** |
+| Khó quản lý thủ công | Giao diện desktop trực quan + chế độ **CLI** tự động |
+
+**Khởi chạy nhanh** — mặc định mở giao diện đồ họa:
+
+```bash
+git clone https://github.com/iamhieuxz/media-tool.git
+cd media-tool
+pip install -r requirements.txt
+python main.py
+```
+
+---
+
+## Tính năng
+
+- **Quét đa đường dẫn** — nhiều thư mục hoặc toàn bộ ổ đĩa Windows
+- **Phát hiện file lỗi** — ảnh và video, phân loại mức độ nghiêm trọng
+- **Tìm trùng lặp** — exact hash hoặc perceptual similarity (tuỳ chọn)
+- **Preview & Compare** — xem thumbnail, metadata, so sánh cặp duplicate
+- **Thao tác file** — xóa, cách ly (`quarantine/`), xuất CSV
+- **Lịch sử quét** — lưu thống kê vào SQLite
+- **Đóng gói EXE** — build one-file Windows bằng PyInstaller
+
+### Định dạng hỗ trợ
+
+| Loại | Extension |
+|------|-----------|
+| Ảnh | `.jpg` `.jpeg` `.png` `.webp` `.bmp` `.tif` `.tiff` `.gif` |
+| Video | `.mp4` `.mkv` `.avi` `.mov` `.wmv` `.flv` `.webm` `.m4v` |
+
+---
+
+## Yêu cầu
+
+| Thành phần | Ghi chú |
+|------------|---------|
+| Python 3.10+ | Khuyến nghị 3.11 trở lên |
+| Windows | GUI tối ưu nhất; CLI chạy trên Linux/macOS |
+| FFmpeg | Tuỳ chọn — cài `ffprobe` vào PATH để kiểm tra video tốt hơn |
 
 ---
 
 ## Cài đặt
 
 ```bash
-# Clone repository
 git clone https://github.com/iamhieuxz/media-tool.git
 cd media-tool
 
-# Tạo virtual environment (khuyến nghị)
 python -m venv .venv
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # Linux / macOS
 
-# Windows
-.venv\Scripts\activate
-
-# Cài dependencies
 pip install -r requirements.txt
 ```
 
-### Dependencies
+**Dependencies chính:** `flet` · `Pillow` · `opencv-python` · `imagehash`
 
-| Gói | Mục đích |
-|-----|----------|
-| `flet` | Giao diện desktop |
-| `Pillow` | Đọc / validate ảnh |
-| `opencv-python` | Kiểm tra ảnh nâng cao |
-| `imagehash` | Perceptual hash (pHash, dHash) |
-
-Để build EXE, cài thêm PyInstaller:
+Build EXE (tuỳ chọn):
 
 ```bash
 pip install pyinstaller
+python build_exe.py
+# → dist/MediaTool.exe
 ```
 
 ---
 
 ## Hướng dẫn sử dụng
 
-### 1. Chế độ GUI (khuyến nghị)
-
-```bash
-python main.py --gui
-```
-
-Hoặc chạy không tham số — mặc định mở GUI nếu bạn sửa entry point; hiện tại cần flag `--gui`:
-
-```bash
-python main.py --gui
-```
-
-**Quy trình quét:**
-
-1. **Chọn đường dẫn** — nhập path, dùng *Browse* chọn thư mục, hoặc *Add Drive* để quét ổ đĩa.
-2. **Start Scan** — ứng dụng chạy hai giai đoạn:
-   - Kiểm tra file lỗi (corruption check)
-   - Phát hiện trùng lặp (duplicate detection)
-3. **Xem kết quả** — bảng hiển thị file lỗi và nhóm duplicate; dùng ô tìm kiếm để lọc.
-4. **Preview** — chọn một dòng để xem thumbnail, metadata (kích thước, độ phân giải, codec…).
-5. **Compare** — với file duplicate, so sánh side-by-side với file cùng nhóm.
-6. **Thao tác hàng loạt** (footer):
-   - *Export* / *Save Report* → `invalid_media.csv`, `duplicate_media.csv`
-   - *Clean Duplicates* → giữ file đầu mỗi nhóm, xóa bản sao
-   - *Clean Corrupted* → xóa toàn bộ file lỗi
-   - *Delete Selected* → xóa các dòng đã chọn
-   - *Quarantine* → di chuyển file lỗi vào thư mục `quarantine/`
-
-**Điều khiển quét:** *Pause* / *Resume*, *Stop* (dừng an toàn sau file hiện tại).
-
-### 2. Cài đặt (Settings)
-
-Mở biểu tượng ⚙️ trên header:
-
-| Tuỳ chọn | Ý nghĩa |
-|----------|---------|
-| **Hash Level** | Level 1: MD5/SHA256 (trùng byte); Level 2: Perceptual (ảnh giống nhau) |
-| **Similarity Threshold** | Ngưỡng % cho perceptual hash (mặc định 95) |
-| **Worker Count** | Số luồng song song (`0` = tự động theo CPU) |
-| **Auto Save Results** | Lưu thống kê quét vào SQLite (`data/app.db`) |
-
-### 3. Chế độ CLI
-
-Quét thư mục hiện tại:
+### Giao diện đồ họa (mặc định)
 
 ```bash
 python main.py
 ```
 
-Quét một hoặc nhiều path:
+1. Chọn thư mục (*Browse*) hoặc thêm ổ đĩa (*Add Drive*)
+2. Nhấn **Start Scan** — quét lỗi rồi tìm duplicate trong một pipeline
+3. Lọc kết quả bằng ô tìm kiếm; chọn dòng để **Preview**
+4. Với file duplicate: dùng **Compare** để xem side-by-side
+5. Footer: **Export**, **Clean Duplicates**, **Clean Corrupted**, **Quarantine**
+
+Có thể **Pause / Resume / Stop** trong lúc quét.
+
+#### Settings (⚙️)
+
+| Tuỳ chọn | Mô tả |
+|----------|-------|
+| Hash Level | Level 1: MD5/SHA256 · Level 2: Perceptual (pHash) |
+| Similarity Threshold | Ngưỡng % cho perceptual hash (mặc định 95) |
+| Worker Count | Luồng song song (`0` = tự động) |
+| Auto Save Results | Lưu vào `data/app.db` |
+
+### Dòng lệnh (CLI)
 
 ```bash
-python main.py --path "D:\Photos" "E:\Backup\videos"
+# Quét thư mục hiện tại
+python main.py --cli
+
+# Quét nhiều path
+python main.py --cli --path "D:\Photos" "E:\Backup\videos"
 ```
 
-Kết quả ghi ra:
+Kết quả:
 
-- `invalid_media.csv` — danh sách file lỗi
-- `duplicate_media.csv` — các nhóm file trùng lặp
-
-Log CLI ghi vào `app.log` (hoặc file log cấu hình trong `src/utils/logging_config.py`).
-
-### 4. Build file EXE (Windows)
-
-```bash
-python build_exe.py
-```
-
-File đầu ra: `dist/MediaTool.exe` (one-file, windowed, UAC Admin).
+- `invalid_media.csv` — file lỗi
+- `duplicate_media.csv` — nhóm trùng lặp
 
 ---
 
-## Cấu trúc dự án
+## Kiến trúc
+
+```
+Scan paths → MediaFileScanner
+                ↓
+         MediaChecker (PIL / OpenCV / ffprobe)
+                ↓
+         DuplicateFinder (size → hash / pHash)
+                ↓
+         GUI + CSV + SQLite
+```
 
 ```
 media-tool/
-├── main.py                 # Entry point CLI / GUI
+├── main.py              # Entry point — GUI mặc định, --cli cho CLI
+├── LICENSE              # MIT
 ├── requirements.txt
-├── build_exe.py            # PyInstaller wrapper
-├── src/
-│   ├── constants.py        # Hằng số, extension media
-│   ├── core/               # Checker, deduplicator, hash engines
-│   ├── db/                 # SQLite settings & scan history
-│   ├── gui/                # Flet UI components
-│   ├── models/             # Serializers, duplicate group manager
-│   ├── services/           # MediaInspector, DuplicateService
-│   └── utils/              # File ops, ffmpeg, thumbnails, logging
-├── logs/                   # Log phiên quét (tạo khi chạy)
-├── data/                   # SQLite DB, thumbnail cache
-└── quarantine/             # File lỗi được cách ly
+├── build_exe.py
+└── src/
+    ├── core/            # Checker, deduplicator, hash engines
+    ├── services/        # MediaInspector, DuplicateService
+    ├── gui/             # Flet UI
+    ├── db/              # SQLite settings & history
+    └── utils/           # ffmpeg, thumbnails, file ops
 ```
 
 ---
 
-## Kiến trúc xử lý
+## Lưu ý
 
-```
-Scan paths → MediaFileScanner → danh sách file + size
-                    ↓
-         MediaChecker (PIL / OpenCV / ffprobe)
-                    ↓
-         invalid_media.csv + UI tab "Corrupted"
-                    ↓
-         DuplicateFinder (size bucket → hash / pHash)
-                    ↓
-         duplicate_media.csv + UI tab "Duplicates"
-```
-
-- **Exact duplicate:** nhóm theo kích thước file → hash SHA256/MD5 toàn file.
-- **Perceptual duplicate:** pHash/dHash trên ảnh, gom nhóm theo Hamming distance và ngưỡng similarity.
-- **Corruption:** ảnh qua PIL verify + OpenCV decode; video qua ffprobe (nếu có).
-
----
-
-## Lưu ý quan trọng
-
-1. **Quyền Admin (Windows):** ứng dụng tự yêu cầu elevation để xóa/di chuyển file hệ thống hoặc trên ổ đĩa bảo vệ.
-2. **Sao lưu trước khi xóa:** thao tác *Clean Duplicates* và *Clean Corrupted* **không thể hoàn tác**.
-3. **FFmpeg:** nếu không có `ffprobe`, kiểm tra video sẽ hạn chế hơn.
-4. **Hiệu năng:** quét ổ đĩa lớn + perceptual hash tốn CPU/RAM; giảm worker count nếu máy chậm.
-
----
-
-## Đánh giá nhanh (Product Review)
-
-**Điểm mạnh**
-
-- Pipeline quét thống nhất: một lần quét vừa tìm lỗi vừa tìm duplicate.
-- UI hoàn chỉnh: progress ETA, stat cards, preview/compare, dark mode.
-- Kiến trúc tách lớp rõ (`core` / `services` / `gui`), dễ mở rộng.
-- Hỗ trợ multi-root scan và cache thumbnail.
-- Có CLI cho automation và PyInstaller cho phân phối.
-
-**Hạn chế / cải tiến có thể**
-
-- Một số nhãn UI còn tiếng Anh, code comment tiếng Việt — có thể thống nhất i18n.
-- `HashLevel.VIDEO_SIMILARITY` / `NEAR_DUPLICATE` đã định nghĩa nhưng chưa expose đầy đủ trong Settings.
-- Chưa có unit test tự động trong repo.
-- CLI mặc định quét `cwd` nếu không truyền `--path`; cần `--gui` rõ ràng cho GUI.
+1. **Windows Admin** — ứng dụng có thể yêu cầu quyền nâng cao khi xóa/di chuyển file hệ thống.
+2. **Sao lưu trước khi xóa** — thao tác xóa và dọn duplicate **không thể hoàn tác**.
+3. **FFmpeg** — không có `ffprobe` thì kiểm tra video sẽ hạn chế.
+4. **Hiệu năng** — quét ổ lớn + perceptual hash tốn CPU; giảm Worker Count nếu cần.
 
 ---
 
 ## Giấy phép
 
-Dự án mã nguồn mở — thêm file `LICENSE` nếu bạn chọn giấy phép cụ thể (MIT, Apache-2.0, …).
+Phát hành theo [MIT License](LICENSE) — © 2026 [iamhieuxz](https://github.com/iamhieuxz).
 
 ---
 
-## Liên hệ & Repository
+## Liên hệ
 
-- GitHub: [https://github.com/iamhieuxz/media-tool](https://github.com/iamhieuxz/media-tool)
+- Repository: [github.com/iamhieuxz/media-tool](https://github.com/iamhieuxz/media-tool)
+- Issues & đóng góp: mở Issue hoặc Pull Request trên GitHub
