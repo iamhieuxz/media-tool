@@ -10,6 +10,22 @@
 
 ---
 
+## Screenshot
+
+Giao diện chính khi quét thư mục media — theo dõi tiến trình, thống kê, bảng kết quả, preview và nhật ký hoạt động.
+
+![Media Scanner Pro — giao diện chính](docs/screenshots/main-ui.png)
+
+| Khu vực | Mô tả |
+|---------|-------|
+| Thanh quét | Chọn thư mục, Start / Pause / Stop, thanh tiến trình & ETA |
+| Thống kê | Tổng file, duplicate, corrupted, dung lượng có thể giải phóng |
+| Bảng kết quả | Tab Duplicate / Corrupted, lọc, chọn và thao tác hàng loạt |
+| Preview | Xem thumbnail, metadata, so sánh cặp file trùng |
+| Footer | Export, Clean Duplicates, Clean Corrupted Files |
+
+---
+
 ## Vì sao dùng Media Scanner Pro?
 
 Thư viện ảnh/video lớn thường chứa file tải lại nhiều lần, bản backup trùng nhau, hoặc file bị hỏng do copy không hoàn chỉnh. Media Scanner Pro gom ba việc quan trọng vào một luồng xử lý duy nhất:
