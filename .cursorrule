@@ -1,0 +1,33 @@
+---
+
+## 2. Nội dung file `.cursorrules` (hoặc `project.rule`)
+Trả lời mọi thứ bằng Tiếng Việt
+File này cực kỳ quan trọng nếu bạn dùng các AI Code Editor như **Cursor**, **Windsurf**, hoặc **Copilot**. Nó định hình "tư duy" của AI để viết code chuẩn xác ngay từ đầu, tránh việc sinh code rác hoặc code làm treo máy khi quét ổ cứng lớn.
+
+Hãy tạo một file tên là `.cursorrules` ở thư mục gốc của dự án và dán nội dung này vào:
+
+```json
+{
+  "project_context": "Dự án Python kiểm kê, phát hiện file media lỗi và trùng lặp với khối lượng dữ liệu cực lớn (Big Data/Massive Media Library).",
+  "tech_stack": [
+    "Python 3.10+",
+    "pathlib (Modern file system management)",
+    "Pillow (Image processing)",
+    "opencv-python (Video decoding)",
+    "tqdm (Progress bar)",
+    "hashlib (MD5/SHA256 for duplication)"
+  ],
+  "code_style_and_standards": {
+    "file_management": "Luôn ưu tiên sử dụng thư viện `pathlib.Path` thay vì `os.path` truyền thống để tăng độ an toàn trên đa nền tảng (Windows/Linux/macOS).",
+    "memory_management": "Bắt buộc áp dụng Streaming/Chunking khi đọc file lớn. Tuyệt đối không dùng `file.read()` không tham số đối với tác vụ băm hash video. Kích thước chunk khuyến nghị là 65536 bytes.",
+    "error_handling": "Tất cả các hàm xử lý file cá biệt phải được bọc trong các khối `try-except`. Khi phát hiện file lỗi, ghi nhận vào log/report và tiếp tục chạy, không được phép làm crash toàn bộ tiến trình quét.",
+    "performance": "Sử dụng `concurrent.futures.ThreadPoolExecutor` cho các tác vụ I/O bound (quét ổ cứng) và `ProcessPoolExecutor` cho các tác vụ CPU bound (giải mã video, tính toán hash phức tạp) nếu lượng file vượt quá 10,000 files.",
+    "logging": "Không lạm dụng `print()`. Sử dụng thư viện `logging` chuẩn của Python để phân tách luồng log ra Console (INFO) và file `app.log` (DEBUG/ERROR)."
+  },
+  "specific_functional_rules": {
+    "corrupted_image_check": "Để kiểm tra ảnh lỗi, sử dụng `Image.open(path)` kết hợp với `img.verify()`. Để chắc chắn hơn, hãy thử thực hiện một thao tác nhẹ như `img.transpose(Image.FLIP_LEFT_RIGHT)` để ép Pillow load toàn bộ dữ liệu pixel vào bộ nhớ.",
+    "corrupted_video_check": "Sử dụng `cv2.VideoCapture(str(path))`. Kiểm tra tính hợp lệ bằng `cap.isOpened()`. Thử dịch chuyển tới frame giữa hoặc frame cuối để đảm bảo video không bị cắt cụt (truncated). Luôn gọi `cap.release()` sau khi kiểm tra xong.",
+    "duplicate_check": "Sử dụng một `dict` cấu trúc dạng `{file_size: [path1, path2]}` làm bộ lọc bước 1. Chỉ tiến hành tính toán hash MD5 đối với những file có cùng dung lượng (size) chính xác đến từng byte để tiết kiệm tối đa tài nguyên I/O ổ cứng."
+  },
+  "output_preference": "Code sinh ra phải đi kèm Type Hinting đầy đủ, có docstring giải thích ngắn gọn bằng tiếng Việt hoặc tiếng Anh, tuân thủ nghiêm ngặt chuẩn PEP 8."
+}

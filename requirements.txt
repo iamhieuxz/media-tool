@@ -1,0 +1,4 @@
+Pillow==10.4.0
+opencv-python==4.10.0.84
+flet==0.24.1
+imagehash==4.3.1

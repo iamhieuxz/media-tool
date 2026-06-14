@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+*.spec.bak
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Runtime / generated data
+logs/
+data/
+quarantine/
+scan_history/
+*.log
+invalid_media.csv
+duplicate_media.csv
+invalid_media_bucket/
+
+# IDE / OS
+.cursor/
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+*.swp
+
+# PyInstaller
+build/MediaTool/
